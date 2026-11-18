@@ -23,6 +23,8 @@ const VERSION_FILE: &str = "web/version.txt";
 const CONFIG_FILE: &str = "web/config.json";
 const HISTORY_FILE: &str = "web/history.json";
 const HISTORY_EVERY: Duration = Duration::from_secs(300);
+/// The first history goes up on connect, often before any reading is logged: send it again soon.
+const HISTORY_FIRST: Duration = Duration::from_secs(60);
 const RETRY_AFTER: Duration = Duration::from_secs(120);
 const MAX_FILE: usize = 32 * 1024; // put_file's limit
 
@@ -32,6 +34,7 @@ pub struct Web {
     page_ok: bool,
     names: Option<[String; 2]>,
     history_at: Option<Instant>,
+    history_sent: u32,
     retry_at: Option<Instant>,
     cleared: bool,
 }
@@ -77,9 +80,11 @@ impl Web {
             put(app, CONFIG_FILE, &config_json(names))?;
             self.names = Some(names.clone());
         }
-        if self.history_at.is_none_or(|t| t.elapsed() >= HISTORY_EVERY) {
+        let every = if self.history_sent < 2 { HISTORY_FIRST } else { HISTORY_EVERY };
+        if self.history_at.is_none_or(|t| t.elapsed() >= every) {
             put(app, HISTORY_FILE, &report::history_json(logs))?;
             self.history_at = Some(Instant::now());
+            self.history_sent += 1;
         }
         Ok(())
     }
