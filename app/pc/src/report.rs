@@ -87,6 +87,27 @@ pub fn write(logs: &Logs, names: &[String; 2]) -> io::Result<PathBuf> {
     Ok(path)
 }
 
+/// The web page's `history.json`: 5-minute averages of the last 24 hours per sensor.
+pub fn history_json(logs: &Logs) -> String {
+    let now = Local::now();
+    let now_s = now.timestamp();
+    let today = now.date_naive();
+    let step = 300;
+    let start = (now_s - 86_400) / step * step;
+    let r = Range { key: "day", start, step, count: ((now_s - start) / step + 1) as usize };
+    let mut j = format!("{{\"made\":{now_s},\"start\":{start},\"step\":{step},\"series\":[");
+    for n in 1..=2 {
+        let rows: Vec<Row> = (0..2).rev().flat_map(|d| logs.rows(n, today - Duration::days(d))).collect();
+        let (t, h) = buckets(&rows, &r);
+        if n > 1 {
+            j.push(',');
+        }
+        let _ = write!(j, "{{\"t\":{},\"h\":{}}}", list(&t), list(&h));
+    }
+    j.push_str("]}");
+    j
+}
+
 /// Average temperature and humidity per bucket; None where the bucket has no good reading.
 fn buckets(rows: &[Row], r: &Range) -> (Vec<Option<f32>>, Vec<Option<f32>>) {
     let mut sum = vec![(0f64, 0f64, 0u32); r.count];
@@ -117,7 +138,7 @@ fn list(v: &[Option<f32>]) -> String {
 }
 
 /// A JSON string that is also safe inside a `<script>` element.
-fn js_str(s: &str) -> String {
+pub fn js_str(s: &str) -> String {
     let mut o = String::from("\"");
     for c in s.chars() {
         match c {

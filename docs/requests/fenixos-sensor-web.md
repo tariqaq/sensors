@@ -4,6 +4,14 @@ Written for the fenixOS repo (`tariqaq/fenixOS`) and the agent working in it. It
 
 The design below is a proposal. Where it conflicts with how fenixOS is built, keep the goals in section 1 and adapt the mechanism. Document what was built and where it differs, as a status block at the top of this file like the last request.
 
+> **Status: implemented in fenixOS v0.1.31 (P61), 2026-11-18.** Pin `fenix-sdk` and `fenix-pkg` to `v0.1.31` and set `min_fenixos = "0.1.31"` to use `<b>_time`. Reference: `docs/packages.md` "Sensors", `docs/sd-card.md` "Status page from the card", `docs/sidecars.md` (`file_put`), and the template's `docs/fenixos/app-format.md` "App web page" / `dev-guide.md` section 6 (re-copy them). Tested on the real board with both DHT22s over Wi-Fi. Built: 3.1 (`_time`), 3.2 (`/sensors.json`), 3.3 (10 s watch), 3.4 (app web folders) and the optional `/apps.json` with links on the built-in page. Where it differs:
+>
+> - `_time` is generated for every sensor once `min_fenixos` is 0.1.31 or newer (used in the layout or not), and refused in a layout with an older `min_fenixos`; 0.1.29 packages keep six bindings. `<b>_age` not built.
+> - `/sensors.json` is as in 3.2. After a pause in polling, a pin shows `"state": "reading"` (with its last good values, `read` and `age`) for up to 2 s, until the first read.
+> - `/apps/<id>` (no slash) redirects to `/apps/<id>/`.
+> - Not built (optional): the URL on the PC app's app page (3.5), `fenix_sdk::web_url`, `fenix web`. `fenix files put page.html data/<id>/web/index.html` works as is.
+> - **Criterion 7 not met as written:** with the app open, three clients polling every 1 s and a Wi-Fi link session, the heap low point was 25.6 KB (27.7 KB without the link session), not above 35.9 KB. The 35.9 KB was measured on Home; an open app's layout and the sensor task (3.8 KB) take the difference, and the three sockets cost the same 12 to 17 KB as then. 25.6 KB is within lows the board runs at (Wi-Fi stream 23.9 KB), no request failed beyond 1 of ~210, readings stayed at most 2 s old. UI stutter not checked by eye. If it matters, poll every 2 s from fewer clients.
+
 ## 1. Goals
 
 1. **Last updated time on the board.** Each sensor card shows when its value was last read, with seconds (`14:03:27`). It must be right with or without the PC. Today an app can't do this: the board sets only the six sensor bindings, and a PC-set time freezes while the PC is away even though the readings stay live.

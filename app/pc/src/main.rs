@@ -3,11 +3,13 @@
 //! the board is connected, and:
 //! - logs them to `%LOCALAPPDATA%\fenixOS-sensors\logs\<n> - <name>\YYYY-MM-DD.csv`,
 //! - sends the sensor names and today's lowest and highest values to the board,
-//! - builds an HTML report and opens the logs folder (the two button settings).
+//! - builds an HTML report and opens the logs folder (the two button settings),
+//! - puts the web page on the board (fenixOS 0.1.31), served at `http://fenixos.local/apps/<id>/`.
 #![windows_subsystem = "windows"]
 
 mod logs;
 mod report;
+mod web;
 
 use std::path::Path;
 use std::process::Command;
@@ -45,6 +47,7 @@ fn main() {
         .map(|n| Sensor { n, name: name_setting(&app, n), last: None, today: logs.today(n, date) })
         .collect();
     logs.prune(keep_days(&app), date);
+    let mut page = web::Web::new();
 
     loop {
         match app.next(Duration::from_secs(1)) {
@@ -104,6 +107,8 @@ fn main() {
             logs.prune(keep_days(&app), date);
             push(&app, &sensors);
         }
+        let names = [sensors[0].name.clone(), sensors[1].name.clone()];
+        page.tick(&app, &logs, &names, web_on(&app));
     }
 }
 
@@ -131,6 +136,11 @@ fn name_setting(app: &App, n: usize) -> String {
 /// The "log every" setting in seconds (a choice: "2", "10", "60" or "300").
 fn log_every(app: &App) -> u64 {
     setting_str(app, "log_every").and_then(|v| v.parse().ok()).unwrap_or(2).max(2)
+}
+
+/// The "web" toggle: the page on the board, on unless switched off.
+fn web_on(app: &App) -> bool {
+    app.settings().get("web").and_then(|v| v.as_bool()).unwrap_or(true)
 }
 
 /// The "keep" setting in days; 0 keeps everything.

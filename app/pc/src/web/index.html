@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#000000">
+<title>Sensors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="app.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<main>
+  <header class="top">
+    <div>
+      <h1>Sensors</h1>
+      <p class="meta" id="meta">Connecting to the board…</p>
+    </div>
+    <div class="pill" id="pill"><span class="dot"></span><span id="pill-text">Board</span></div>
+  </header>
+
+  <section class="card stage" id="stage" hidden>
+    <canvas id="scene" aria-label="3D model of the board and its two sensors"></canvas>
+    <div class="tag" id="tag-1"></div>
+    <div class="tag" id="tag-2"></div>
+    <p class="hint">Drag to turn</p>
+  </section>
+
+  <section class="grid" id="cards"></section>
+
+  <section class="card chart-card">
+    <div class="chart-head"><h2>Temperature <span class="small">°C, last 24 hours</span></h2><div class="legend"></div></div>
+    <div class="plot" id="plot-t"></div>
+  </section>
+  <section class="card chart-card">
+    <div class="chart-head"><h2>Humidity <span class="small">%, last 24 hours</span></h2><div class="legend"></div></div>
+    <div class="plot" id="plot-h"></div>
+  </section>
+
+  <footer id="foot">Served by your fenixOS board. Readings every 2 s; history from the PC every 5 min.</footer>
+</main>
+<script src="app.js"></script>
+<script type="module" src="scene.js"></script>
+</body>
+</html>

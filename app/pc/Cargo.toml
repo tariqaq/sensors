@@ -1,10 +1,10 @@
 [package]
 name = "app"  # the exe is dist/app.exe; the manifest's id names the app
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 publish = false
 
 [dependencies]
 # Pin to the fenixOS release the app targets (min_fenixos in manifest.json).
-fenix-sdk = { git = "https://github.com/tariqaq/fenixOS", tag = "v0.1.30" }
+fenix-sdk = { git = "https://github.com/tariqaq/fenixOS", tag = "v0.1.31" }
 chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }

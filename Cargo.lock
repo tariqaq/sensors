@@ -13,7 +13,7 @@ dependencies = [
 
 [[package]]
 name = "app"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "chrono",
  "fenix-sdk",
@@ -78,8 +78,8 @@ checksum = "abd57806937c9cc163efc8ea3910e00a62e2aeb0b8119f1793a978088f8f6b04"
 
 [[package]]
 name = "fenix-sdk"
-version = "0.1.30"
-source = "git+https://github.com/tariqaq/fenixOS?tag=v0.1.30#d54b7d379ef4199e6604b81162e2d523eac1c973"
+version = "0.1.31"
+source = "git+https://github.com/tariqaq/fenixOS?tag=v0.1.31#6d6c38fd4678381ee08c9e5c5f9c0b5c7cddacd7"
 dependencies = [
  "base64",
  "deunicode",

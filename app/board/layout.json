@@ -38,13 +38,29 @@
        },
        "children": [
         {
-         "type": "label",
-         "text": "Sensor 1",
-         "font": "label_semibold",
-         "bind": "name1",
+         "type": "box",
+         "flow": "row",
          "w": "100%",
          "grow": 1,
-         "overflow": "ellipsis"
+         "cross": "center",
+         "gap": 6,
+         "children": [
+          {
+           "type": "label",
+           "text": "Sensor 1",
+           "font": "label_semibold",
+           "bind": "name1",
+           "grow": 1,
+           "overflow": "ellipsis"
+          },
+          {
+           "type": "label",
+           "text": "--:--:--",
+           "font": "caption",
+           "color": "label_2",
+           "bind": "s1_time"
+          }
+         ]
         },
         {
          "type": "label",
@@ -156,13 +172,29 @@
        },
        "children": [
         {
-         "type": "label",
-         "text": "Sensor 2",
-         "font": "label_semibold",
-         "bind": "name2",
+         "type": "box",
+         "flow": "row",
          "w": "100%",
          "grow": 1,
-         "overflow": "ellipsis"
+         "cross": "center",
+         "gap": 6,
+         "children": [
+          {
+           "type": "label",
+           "text": "Sensor 2",
+           "font": "label_semibold",
+           "bind": "name2",
+           "grow": 1,
+           "overflow": "ellipsis"
+          },
+          {
+           "type": "label",
+           "text": "--:--:--",
+           "font": "caption",
+           "color": "label_2",
+           "bind": "s2_time"
+          }
+         ]
         },
         {
          "type": "label",
