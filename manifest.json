@@ -1,18 +1,25 @@
 {
-  "id": "io.github.tariqaq.starter",
-  "name": "Starter",
-  "description": "Template app: a counter the PC sends to the board, with a switch and a button",
+  "id": "io.github.tariqaq.sensors",
+  "name": "Sensors",
+  "description": "Live temperature and humidity from two DHT22 sensors on the board, logged on your PC",
   "version": "0.1.0",
-  "min_fenixos": "0.1.13",
+  "min_fenixos": "0.1.29",
   "color": "teal",
-  "icon": "timer",
-  "repo": "https://github.com/tariqaq/fenixos-starter",
+  "icon": "thermometer",
+  "repo": "https://github.com/tariqaq/sensors",
   "board": {},
   "pc": { "elevated": false },
-  "permissions": [],
+  "permissions": ["sensors", "files", "programs"],
   "settings": [
-    { "key": "greeting", "type": "text", "label": "Greeting", "default": "Seconds counted on your PC", "max_len": 40 },
-    { "key": "step", "type": "choice", "label": "Count every", "default": "1", "options": [
-      { "value": "1", "label": "1 s" }, { "value": "2", "label": "2 s" }, { "value": "5", "label": "5 s" } ] }
+    { "key": "name1", "type": "text", "label": "Sensor 1 name (IO22)", "default": "Sensor 1", "max_len": 16 },
+    { "key": "name2", "type": "text", "label": "Sensor 2 name (IO27)", "default": "Sensor 2", "max_len": 16 },
+    { "key": "log_every", "type": "choice", "label": "Log a reading every", "default": "2", "options": [
+      { "value": "2", "label": "2 s (every reading)" }, { "value": "10", "label": "10 s" },
+      { "value": "60", "label": "1 min" }, { "value": "300", "label": "5 min" } ] },
+    { "key": "keep", "type": "choice", "label": "Keep logs for", "default": "0", "options": [
+      { "value": "30", "label": "30 days" }, { "value": "90", "label": "90 days" },
+      { "value": "365", "label": "1 year" }, { "value": "0", "label": "Forever" } ] },
+    { "key": "report", "type": "button", "label": "Open report" },
+    { "key": "open_logs", "type": "button", "label": "Open logs folder" }
   ]
 }

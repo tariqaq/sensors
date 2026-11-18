@@ -1,22 +1,258 @@
 {
-  "type": "box", "w": "100%", "pad": 12, "gap": 10, "portrait": { "pad": 10 },
-  "children": [
+ "type": "box",
+ "w": "100%",
+ "pad": 12,
+ "gap": 10,
+ "portrait": {
+  "pad": 10
+ },
+ "children": [
+  {
+   "type": "box",
+   "flow": "row",
+   "w": "100%",
+   "gap": 10,
+   "portrait": {
+    "flow": "column"
+   },
+   "children": [
     {
-      "type": "box", "w": "100%", "bg": "surface_1", "radius": 12, "pad": 10, "gap": 4,
-      "children": [
-        { "type": "label", "text": "--", "font": "label", "color": "label_2", "bind": "greeting" },
-        { "type": "label", "text": "--", "font": "title_l", "bind": "count_text" },
-        { "type": "bar", "min": 0, "max": 60, "bind": "count", "w": "100%", "h": 6 }
-      ]
+     "type": "box",
+     "bg": "surface_1",
+     "radius": 12,
+     "pad": 10,
+     "gap": 8,
+     "grow": 1,
+     "portrait": {
+      "w": "100%"
+     },
+     "children": [
+      {
+       "type": "box",
+       "w": "100%",
+       "gap": 2,
+       "portrait": {
+        "flow": "row",
+        "cross": "center",
+        "gap": 8
+       },
+       "children": [
+        {
+         "type": "label",
+         "text": "Sensor 1",
+         "font": "label_semibold",
+         "bind": "name1",
+         "w": "100%",
+         "grow": 1,
+         "overflow": "ellipsis"
+        },
+        {
+         "type": "label",
+         "text": "Reading",
+         "font": "caption",
+         "color": "label_2",
+         "bind": "s1_state"
+        }
+       ]
+      },
+      {
+       "type": "box",
+       "w": "100%",
+       "gap": 8,
+       "portrait": {
+        "flow": "row",
+        "gap": 12
+       },
+       "children": [
+        {
+         "type": "box",
+         "w": "100%",
+         "grow": 1,
+         "gap": 4,
+         "children": [
+          {
+           "type": "label",
+           "text": "--",
+           "font": "title_l",
+           "bind": "s1_temp_text",
+           "w": "100%"
+          },
+          {
+           "type": "bar",
+           "min": -100,
+           "max": 500,
+           "bind": "s1_temp",
+           "w": "100%",
+           "h": 6,
+           "show": "s1_ok"
+          },
+          {
+           "type": "label",
+           "text": "Today --",
+           "font": "caption",
+           "color": "label_2",
+           "bind": "t1_range",
+           "w": "100%",
+           "overflow": "ellipsis"
+          }
+         ]
+        },
+        {
+         "type": "box",
+         "w": "100%",
+         "grow": 1,
+         "gap": 4,
+         "children": [
+          {
+           "type": "label",
+           "text": "--",
+           "font": "title",
+           "bind": "s1_hum_text",
+           "w": "100%"
+          },
+          {
+           "type": "bar",
+           "min": 0,
+           "max": 1000,
+           "bind": "s1_hum",
+           "w": "100%",
+           "h": 6,
+           "show": "s1_ok"
+          },
+          {
+           "type": "label",
+           "text": "Today --",
+           "font": "caption",
+           "color": "label_2",
+           "bind": "h1_range",
+           "w": "100%",
+           "overflow": "ellipsis"
+          }
+         ]
+        }
+       ]
+      }
+     ]
     },
     {
-      "type": "box", "flow": "row", "w": "100%", "gap": 10, "cross": "center",
-      "children": [
-        { "type": "icon", "icon": "timer", "size": 18, "color": "label_2" },
-        { "type": "label", "text": "Counting", "grow": 1 },
-        { "type": "switch", "bind": "running", "event": "running" }
-      ]
-    },
-    { "type": "button", "text": "Reset", "icon": "arrow-clockwise", "bg": "surface_2", "w": "100%", "event": "reset" }
-  ]
+     "type": "box",
+     "bg": "surface_1",
+     "radius": 12,
+     "pad": 10,
+     "gap": 8,
+     "grow": 1,
+     "portrait": {
+      "w": "100%"
+     },
+     "children": [
+      {
+       "type": "box",
+       "w": "100%",
+       "gap": 2,
+       "portrait": {
+        "flow": "row",
+        "cross": "center",
+        "gap": 8
+       },
+       "children": [
+        {
+         "type": "label",
+         "text": "Sensor 2",
+         "font": "label_semibold",
+         "bind": "name2",
+         "w": "100%",
+         "grow": 1,
+         "overflow": "ellipsis"
+        },
+        {
+         "type": "label",
+         "text": "Reading",
+         "font": "caption",
+         "color": "label_2",
+         "bind": "s2_state"
+        }
+       ]
+      },
+      {
+       "type": "box",
+       "w": "100%",
+       "gap": 8,
+       "portrait": {
+        "flow": "row",
+        "gap": 12
+       },
+       "children": [
+        {
+         "type": "box",
+         "w": "100%",
+         "grow": 1,
+         "gap": 4,
+         "children": [
+          {
+           "type": "label",
+           "text": "--",
+           "font": "title_l",
+           "bind": "s2_temp_text",
+           "w": "100%"
+          },
+          {
+           "type": "bar",
+           "min": -100,
+           "max": 500,
+           "bind": "s2_temp",
+           "w": "100%",
+           "h": 6,
+           "show": "s2_ok"
+          },
+          {
+           "type": "label",
+           "text": "Today --",
+           "font": "caption",
+           "color": "label_2",
+           "bind": "t2_range",
+           "w": "100%",
+           "overflow": "ellipsis"
+          }
+         ]
+        },
+        {
+         "type": "box",
+         "w": "100%",
+         "grow": 1,
+         "gap": 4,
+         "children": [
+          {
+           "type": "label",
+           "text": "--",
+           "font": "title",
+           "bind": "s2_hum_text",
+           "w": "100%"
+          },
+          {
+           "type": "bar",
+           "min": 0,
+           "max": 1000,
+           "bind": "s2_hum",
+           "w": "100%",
+           "h": 6,
+           "show": "s2_ok"
+          },
+          {
+           "type": "label",
+           "text": "Today --",
+           "font": "caption",
+           "color": "label_2",
+           "bind": "h2_range",
+           "w": "100%",
+           "overflow": "ellipsis"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
 }

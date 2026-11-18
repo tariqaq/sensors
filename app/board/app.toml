@@ -1,7 +1,18 @@
 # Board half (docs/fenixos/app-format.md). id and version must match manifest.json.
-id = "io.github.tariqaq.starter"
-name = "Starter"
+id = "io.github.tariqaq.sensors"
+name = "Sensors"
 version = "0.1.0"
-min_fenixos = "0.1.13"
+min_fenixos = "0.1.29"
 color = "teal"
 icon = "icon.png"
+
+# Two DHT22 on CN1. The board reads them every 2 s (1 s apart) and sets s1_* and s2_* itself.
+[[sensor]]
+kind = "dht22"
+pin = 22
+bind = "s1"
+
+[[sensor]]
+kind = "dht22"
+pin = 27
+bind = "s2"

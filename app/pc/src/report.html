@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sensors report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #000000; --surface-1: #1C1C1E; --surface-2: #2C2C2E; --surface-3: #3A3A3C;
+  --separator: #38383A; --label: #FFFFFF; --label-2: #98989F; --accent: #0A84FF;
+  --warning: #FF9F0A; --danger: #FF453A; --s1: #3987E5; --s2: #D95926;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--label);
+  font: 15px/1.4 Inter, "Segoe UI", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+main { max-width: 1040px; margin: 0 auto; padding: 32px 16px 48px; }
+h1 { font-size: 28px; font-weight: 600; margin: 0; }
+h2 { font-size: 17px; font-weight: 600; margin: 0; }
+.meta { color: var(--label-2); font-size: 13px; margin: 4px 0 24px; }
+.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.seg { display: inline-flex; background: var(--surface-1); border-radius: 10px; padding: 3px; margin-bottom: 24px; }
+.seg button { font: inherit; font-size: 13px; font-weight: 500; color: var(--label); background: none;
+  border: 0; border-radius: 8px; padding: 7px 16px; cursor: pointer; min-height: 32px; }
+.seg button[aria-pressed="true"] { background: var(--surface-3); }
+.seg button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 16px; margin-bottom: 16px; }
+.card { background: var(--surface-1); border-radius: 14px; padding: 20px; min-width: 0; }
+.name { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.sw { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.state { margin-left: auto; color: var(--label-2); font-size: 13px; font-weight: 400; }
+.now { display: flex; gap: 32px; margin: 12px 0 4px; }
+.big { font-size: 34px; font-weight: 600; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.unit { font-size: 17px; color: var(--label-2); font-weight: 500; margin-left: 2px; }
+.small { color: var(--label-2); font-size: 13px; }
+.stats { display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 6px 16px; margin-top: 16px;
+  padding-top: 14px; border-top: 1px solid var(--separator); font-size: 13px; font-variant-numeric: tabular-nums; }
+.stats .h { color: var(--label-2); }
+.chart-card { margin-bottom: 16px; }
+.chart-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; margin-bottom: 12px; }
+.legend { display: flex; gap: 16px; font-size: 13px; color: var(--label-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.plot { position: relative; height: 240px; }
+.plot svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.plot text { fill: var(--label-2); font-size: 12px; font-family: inherit; }
+.empty { display: grid; place-items: center; height: 100%; color: var(--label-2); font-size: 13px; }
+.tip { position: absolute; pointer-events: none; background: var(--surface-2); border-radius: 10px;
+  padding: 8px 10px; font-size: 13px; white-space: nowrap; opacity: 0; transition: opacity .12s; }
+.tip .row { display: flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
+.tip .t { color: var(--label-2); margin-bottom: 4px; }
+details { background: var(--surface-1); border-radius: 14px; padding: 4px 20px; }
+summary { cursor: pointer; padding: 14px 0; font-weight: 600; }
+.table-wrap { overflow-x: auto; padding-bottom: 16px; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; }
+th, td { text-align: right; padding: 6px 10px; border-bottom: 1px solid var(--separator); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { color: var(--label-2); font-weight: 500; }
+footer { color: var(--label-2); font-size: 12px; margin-top: 24px; word-break: break-all; }
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div>
+      <h1>Sensors</h1>
+      <p class="meta" id="meta"></p>
+    </div>
+    <div class="seg" role="group" aria-label="Time range">
+      <button type="button" data-r="day" aria-pressed="true">24 hours</button>
+      <button type="button" data-r="week" aria-pressed="false">7 days</button>
+    </div>
+  </div>
+  <section class="grid" id="cards"></section>
+  <section class="card chart-card">
+    <div class="chart-head"><h2>Temperature <span class="small">°C</span></h2><div class="legend"></div></div>
+    <div class="plot" id="plot-t"></div>
+  </section>
+  <section class="card chart-card">
+    <div class="chart-head"><h2>Humidity <span class="small">%</span></h2><div class="legend"></div></div>
+    <div class="plot" id="plot-h"></div>
+  </section>
+  <details>
+    <summary>Table</summary>
+    <div class="table-wrap" id="table"></div>
+  </details>
+  <footer id="foot"></footer>
+</main>
+<script>
+const D = __DATA__;
+const COLORS = ["var(--s1)", "var(--s2)"];
+let range = "day";
+
+const $ = (s) => document.querySelector(s);
+const el = (tag, attrs = {}, text) => {
+  const ns = ["svg", "path", "line", "text", "circle", "rect", "g"].includes(tag);
+  const e = ns ? document.createElementNS("http://www.w3.org/2000/svg", tag) : document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (text !== undefined) e.textContent = text;
+  return e;
+};
+const fmt = (v, d) => (v === null || v === undefined ? "--" : v.toFixed(d));
+const time = (s, opts) => new Date(s * 1000).toLocaleString(undefined, opts);
+const hm = { hour: "2-digit", minute: "2-digit" };
+const STATE = { ok: "Live", missing: "Not connected", error: "Read error" };
+
+function stats(arr) {
+  const v = arr.filter((x) => x !== null);
+  if (!v.length) return null;
+  return { lo: Math.min(...v), hi: Math.max(...v), avg: v.reduce((a, b) => a + b, 0) / v.length };
+}
+
+function cards() {
+  const box = $("#cards");
+  box.replaceChildren();
+  const R = D.ranges[range];
+  D.sensors.forEach((s, i) => {
+    const c = el("div", { class: "card" });
+    const head = el("div", { class: "name" });
+    head.append(el("span", { class: "sw", style: `background:${COLORS[i]}` }), el("span", {}, s.name));
+    const last = s.last;
+    head.append(el("span", { class: "state" }, last ? STATE[last.state] || last.state : "No readings"));
+    c.append(head);
+    const now = el("div", { class: "now" });
+    const t = last && last.state === "ok" ? last.t : null, h = last && last.state === "ok" ? last.h : null;
+    for (const [v, d, u] of [[t, 1, "°C"], [h, 1, "%"]]) {
+      const b = el("div", { class: "big" }, fmt(v, d));
+      b.append(el("span", { class: "unit" }, u));
+      now.append(b);
+    }
+    c.append(now);
+    c.append(el("div", { class: "small" }, last ? "Last reading " + time(last.at, { ...hm, second: "2-digit", day: "numeric", month: "short" }) : "Nothing logged yet"));
+    const st = el("div", { class: "stats" });
+    st.append(el("span"), el("span", { class: "h" }, "Low"), el("span", { class: "h" }, "High"), el("span", { class: "h" }, "Average"));
+    for (const [k, label, d] of [["t", "°C", 1], ["h", "%", 0]]) {
+      const x = stats(R.series[i][k]);
+      st.append(el("span", { class: "h" }, label));
+      for (const f of ["lo", "hi", "avg"]) st.append(el("span", {}, x ? fmt(x[f], d) : "--"));
+    }
+    c.append(st);
+    box.append(c);
+  });
+}
+
+function niceTicks(lo, hi, n) {
+  const span = hi - lo || 1, raw = span / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw);
+  const out = [];
+  const end = Math.ceil(hi / step) * step;
+  for (let v = Math.floor(lo / step) * step; v <= end + 1e-9; v += step) out.push(+v.toFixed(6));
+  return out;
+}
+
+function chart(id, key, dec, unit) {
+  const wrap = $("#" + id);
+  wrap.replaceChildren();
+  const R = D.ranges[range], n = R.series[0][key].length;
+  const all = R.series.flatMap((s) => s[key]).filter((v) => v !== null);
+  if (!all.length) { wrap.append(el("div", { class: "empty" }, "No readings in this range")); return; }
+  const W = wrap.clientWidth, H = wrap.clientHeight, m = { l: 40, r: 96, t: 10, b: 26 };
+  let lo = Math.min(...all), hi = Math.max(...all);
+  const pad = Math.max((hi - lo) * 0.15, key === "t" ? 0.5 : 2);
+  const ticks = niceTicks(lo - pad, hi + pad, 4);
+  lo = ticks[0]; hi = ticks[ticks.length - 1];
+  const x = (i) => m.l + (i * (W - m.l - m.r)) / Math.max(n - 1, 1);
+  const y = (v) => m.t + ((hi - v) * (H - m.t - m.b)) / (hi - lo || 1);
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": `${key === "t" ? "Temperature" : "Humidity"} chart` });
+  for (const v of ticks) {
+    svg.append(el("line", { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), stroke: "var(--separator)", "stroke-width": 1 }));
+    svg.append(el("text", { x: m.l - 8, y: y(v) + 4, "text-anchor": "end" }, fmt(v, Number.isInteger(v) ? 0 : 1)));
+  }
+  // Time ticks: every 3 hours, or every midnight for 7 days.
+  const every = range === "day" ? 3 * 3600 : 86400;
+  for (let i = 0; i < n; i++) {
+    const s = R.start + i * R.step, d = new Date(s * 1000);
+    const local = s - d.getTimezoneOffset() * 60;
+    if (((local % every) + every) % every >= R.step) continue;
+    const label = range === "day" ? time(s, hm) : time(s, { weekday: "short", day: "numeric" });
+    svg.append(el("line", { x1: x(i), x2: x(i), y1: H - m.b, y2: H - m.b + 4, stroke: "var(--surface-3)" }));
+    svg.append(el("text", { x: x(i), y: H - 6, "text-anchor": "middle" }, label));
+  }
+  const ends = [];
+  R.series.forEach((s, si) => {
+    let d = "", pen = false, lastI = -1;
+    s[key].forEach((v, i) => {
+      if (v === null) { pen = false; return; }
+      d += (pen ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1);
+      pen = true; lastI = i;
+    });
+    if (d) svg.append(el("path", { d, fill: "none", stroke: COLORS[si], "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }));
+    if (lastI >= 0) ends.push({ si, yy: y(s[key][lastI]), xx: x(lastI) });
+  });
+  // Direct labels at the line ends, nudged apart.
+  ends.sort((a, b) => a.yy - b.yy);
+  for (let k = 1; k < ends.length; k++) if (ends[k].yy - ends[k - 1].yy < 16) ends[k].yy = ends[k - 1].yy + 16;
+  for (const e of ends) {
+    svg.append(el("circle", { cx: e.xx, cy: y(R.series[e.si][key].filter((v) => v !== null).slice(-1)[0]), r: 4, fill: COLORS[e.si], stroke: "var(--surface-1)", "stroke-width": 2 }));
+    const name = D.sensors[e.si].name;
+    svg.append(el("text", { x: W - m.r + 10, y: e.yy + 4, fill: "var(--label-2)" }, name.length > 12 ? name.slice(0, 11) + "…" : name));
+  }
+  // Hover: a crosshair, a dot per series and a tooltip.
+  const cross = el("line", { y1: m.t, y2: H - m.b, stroke: "var(--label-2)", "stroke-width": 1, opacity: 0 });
+  const dots = R.series.map((_, si) => el("circle", { r: 4, fill: COLORS[si], stroke: "var(--surface-1)", "stroke-width": 2, opacity: 0 }));
+  svg.append(cross, ...dots);
+  const hit = el("rect", { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent" });
+  svg.append(hit);
+  wrap.append(svg);
+  const tip = el("div", { class: "tip" });
+  wrap.append(tip);
+  const hide = () => { cross.setAttribute("opacity", 0); dots.forEach((d) => d.setAttribute("opacity", 0)); tip.style.opacity = 0; };
+  hit.addEventListener("pointerleave", hide);
+  hit.addEventListener("pointermove", (ev) => {
+    const r = svg.getBoundingClientRect();
+    const px = ((ev.clientX - r.left) * W) / r.width;
+    const i = Math.max(0, Math.min(n - 1, Math.round(((px - m.l) * (n - 1)) / (W - m.l - m.r))));
+    cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("opacity", 0.5);
+    tip.replaceChildren(el("div", { class: "t" }, time(R.start + i * R.step, range === "day" ? hm : { ...hm, weekday: "short", day: "numeric" })));
+    R.series.forEach((s, si) => {
+      const v = s[key][i];
+      dots[si].setAttribute("opacity", v === null ? 0 : 1);
+      if (v !== null) { dots[si].setAttribute("cx", x(i)); dots[si].setAttribute("cy", y(v)); }
+      const row = el("div", { class: "row" });
+      row.append(el("span", { class: "sw", style: `background:${COLORS[si]}` }), el("span", {}, `${D.sensors[si].name}  ${fmt(v, dec)} ${unit}`));
+      tip.append(row);
+    });
+    tip.style.opacity = 1;
+    const tx = x(i) + 12 + tip.offsetWidth > W ? x(i) - 12 - tip.offsetWidth : x(i) + 12;
+    tip.style.left = tx + "px"; tip.style.top = m.t + "px";
+  });
+}
+
+function table() {
+  const R = D.ranges[range], group = 12; // 1 hour of 5 min, or 6 hours of 30 min
+  const tbl = el("table");
+  const hr = el("tr");
+  hr.append(el("th", {}, range === "day" ? "Hour" : "From"));
+  D.sensors.forEach((s) => { hr.append(el("th", {}, s.name + " °C"), el("th", {}, s.name + " %")); });
+  tbl.append(hr);
+  const n = R.series[0].t.length;
+  for (let g = Math.floor((n - 1) / group) * group; g >= 0; g -= group) {
+    const tr = el("tr");
+    tr.append(el("td", {}, time(R.start + g * R.step, range === "day" ? hm : { ...hm, weekday: "short", day: "numeric" })));
+    let any = false;
+    R.series.forEach((s) => {
+      for (const [k, d] of [["t", 1], ["h", 0]]) {
+        const x = stats(s[k].slice(g, g + group));
+        if (x) any = true;
+        tr.append(el("td", {}, x ? fmt(x.avg, d) : "--"));
+      }
+    });
+    if (any) tbl.append(tr);
+  }
+  $("#table").replaceChildren(tbl);
+}
+
+function legends() {
+  document.querySelectorAll(".legend").forEach((lg) => {
+    lg.replaceChildren(...D.sensors.map((s, i) => {
+      const sp = el("span");
+      sp.append(el("span", { class: "sw", style: `background:${COLORS[i]}` }), document.createTextNode(s.name));
+      return sp;
+    }));
+  });
+}
+
+function render() {
+  cards();
+  chart("plot-t", "t", 1, "°C");
+  chart("plot-h", "h", 1, "%");
+  table();
+}
+
+$("#meta").textContent = "Made " + time(D.made, { dateStyle: "medium", timeStyle: "short" }) + " from the logs on this PC";
+$("#foot").textContent = "Logs: " + D.folder;
+document.querySelectorAll(".seg button").forEach((b) => b.addEventListener("click", () => {
+  range = b.dataset.r;
+  document.querySelectorAll(".seg button").forEach((o) => o.setAttribute("aria-pressed", o === b));
+  render();
+}));
+let rt;
+addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(render, 100); });
+legends();
+render();
+</script>
+</body>
+</html>

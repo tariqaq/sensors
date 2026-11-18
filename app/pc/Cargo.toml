@@ -6,4 +6,5 @@ publish = false
 
 [dependencies]
 # Pin to the fenixOS release the app targets (min_fenixos in manifest.json).
-fenix-sdk = { git = "https://github.com/tariqaq/fenixOS", tag = "v0.1.28" }
+fenix-sdk = { git = "https://github.com/tariqaq/fenixOS", tag = "v0.1.30" }
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }

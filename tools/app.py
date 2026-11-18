@@ -6,7 +6,7 @@
   python tools/app.py release TAG      dist/<id>.json: the manifest with release URLs, sha256 and sizes, for the
                                        registry PR on tariqaq/fenixOS (registry/apps/<id>.json)
 
-The manifest rules below are copied from fenixOS tools/registry.py (v0.1.28); the registry's CI runs the
+The manifest rules below are copied from fenixOS tools/registry.py (v0.1.30); the registry's CI runs the
 same checks.
 """
 import argparse
@@ -25,9 +25,9 @@ APP_TOML = ROOT / "app" / "board" / "app.toml"
 FILES = {"board": "app.fxp", "pc": "app.exe"}
 
 TILES = {"gray", "indigo", "blue", "teal", "green", "orange", "red", "purple", "pink"}
-PERMISSIONS = {"keys", "media", "system-stats", "network", "files", "programs", "screen"}
+PERMISSIONS = {"keys", "media", "system-stats", "network", "files", "programs", "screen", "sensors"}
 # Permissions an older fenixOS PC app does not know (it would refuse the manifest): need min_fenixos.
-PERMISSION_SINCE = {"screen": (0, 1, 25)}
+PERMISSION_SINCE = {"screen": (0, 1, 25), "sensors": (0, 1, 29)}
 SETTING_TYPES = {"toggle", "slider", "choice", "text", "secret", "button"}
 # Setting types an older fenixOS PC app does not know (it would refuse the manifest): need min_fenixos.
 SETTING_SINCE = {"secret": (0, 1, 26)}
